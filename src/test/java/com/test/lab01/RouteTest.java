@@ -45,7 +45,7 @@ public class RouteTest extends CamelBlueprintTestSupport {
         triggerRoute.adviceWith(context, new AdviceWithRouteBuilder() {
             @Override
             public void configure() {
-                replaceFromWith("file://src/test/resources/testdata?antInclude=*.xml&noop=true&readLock=none&idempotent=true&delay=10000&recursive=true");
+                replaceFromWith("{{TEST.FILE.ENDPOINT}}?antInclude=*.xml&noop=true&readLock=none&idempotent=true&delay=10000&recursive=true");
                 weaveAddLast().to("mock:output");
             }
         });

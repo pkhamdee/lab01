@@ -7,17 +7,21 @@
 	   http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.0.0.xsd
        http://camel.apache.org/schema/blueprint http://camel.apache.org/schema/blueprint/camel-blueprint.xsd">
 
-    <cm:property-placeholder id="route.placeholder" persistent-id="route">
+    <cm:property-placeholder id="lab01.placeholder" persistent-id="lab01">
         <cm:default-properties>
             <cm:property name="TEST.FILE.ENDPOINT" value="file://data/app/input"/>
         </cm:default-properties>
     </cm:property-placeholder>
 
-
-    <camelContext id="route-test-context" xmlns="http://camel.apache.org/schema/blueprint">
-        <route id="route-test">
+    <camelContext id="lab01-context" xmlns="http://camel.apache.org/schema/blueprint">
+        <propertyPlaceholder id="properties" location="blueprint:lab01.placeholder"/>
+        <route id="lab01-route">
             <from uri="{{TEST.FILE.ENDPOINT}}?delete=true"/>
             <log message="${in.header.CamelFileName} with content -&gt; ${body}"/>
+            <setHeader headerName="CamelFileName">
+                <simple>${date:now:yyyyMMddhhmmss}-read.xml</simple>
+            </setHeader>
+            <to uri="ftp://localhost:21/data/app/upload?username=jboss&amp;password=jboss#1!"/>
         </route>
     </camelContext>
 

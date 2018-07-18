@@ -31,7 +31,7 @@ public class RouteTest extends CamelBlueprintTestSupport {
         final Properties properties = System.getProperties();
 
         try {
-            properties.load(getClass().getClassLoader().getResourceAsStream("META-INF/etc/route.cfg"));
+            properties.load(getClass().getClassLoader().getResourceAsStream("META-INF/etc/lab01.cfg"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -39,13 +39,14 @@ public class RouteTest extends CamelBlueprintTestSupport {
     }
 
     @Test
-    public void testReadFile_whenTypeIsMatch_thenStartScript() throws Exception {
-        final RouteDefinition triggerRoute = context.getRouteDefinition("route-test");
+    public void testReadFile_whenFileExist_thenPrintContent() throws Exception {
+        final RouteDefinition route = context.getRouteDefinition("lab01-route");
 
-        triggerRoute.adviceWith(context, new AdviceWithRouteBuilder() {
+        route.adviceWith(context, new AdviceWithRouteBuilder() {
             @Override
             public void configure() {
-                replaceFromWith("{{TEST.FILE.ENDPOINT}}?antInclude=*.xml&noop=true&readLock=none&idempotent=true&delay=10000&recursive=true");
+                replaceFromWith("{{TEST.FILE.ENDPOINT}}?antInclude=File1.xml&noop=true&idempotent=true");
+                interceptSendToEndpoint("ftp://*").skipSendToOriginalEndpoint().to("log:uploadfile?showAll=true&multiline=true");
                 weaveAddLast().to("mock:output");
             }
         });
